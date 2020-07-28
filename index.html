@@ -51,22 +51,22 @@ var color = {
   "Direct" : '#6fafc7',
   "Independent" : '#bfd46d'}
   
-// helper function
-function join(lookupTable, mainTable, lookupKey, mainKey, select) {
-    var l = lookupTable.length,
-        m = mainTable.length,
+// helper function - LEFT JOIN on one field
+function leftjoin(rightTable, leftTable, rightFieldName, leftFieldName, select) {
+    var rightCnt = rightTable.length,
+        leftCnt = leftTable.length,
         lookupIndex = [],
-        output = [];
-    for (var i = 0; i < l; i++) { // loop through l items
-        var row = lookupTable[i];
-        lookupIndex[row[lookupKey]] = row; // create an index for lookup table
+        result = [];
+    for (var idx = 0; idx < rightCnt; idx++) { 
+        var row = rightTable[idx];
+        lookupIndex[row[rightFieldName]] = row; 
     }
-    for (var j = 0; j < m; j++) { // loop through m items
-        var y = mainTable[j];
-        var x = lookupIndex[y[mainKey]]; // get corresponding row from lookupTable
-        output.push(select(y, x)); // select only the columns you need
+    for (var idx = 0; idx < leftCnt; idx++) { 
+        var leftResult = leftTable[idx];
+        var rightResult = lookupIndex[leftResult[leftFieldName]]; 
+        result.push(select(leftResult, rightResult)); 
     }
-    return output;
+    return result;
 };
 
 // Function to display chart
@@ -119,7 +119,7 @@ function displayChart(yearMin, yearMax, companyTypes) {
       .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
       .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", -chartmargin.left-5)
+        .attr("y", -55)
         .attr("x",-chartheight/2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
