@@ -506,7 +506,7 @@ function tooltipscene(yearMin, yearMax, companyTypes) {
 
   dataminyear = data.filter(function(d){ return d.Year == yearMin});
 
-  var datachart = join(dataminyear, datafilter, "Company", "Company", function(main, min) {
+  var datachart = leftjoin(dataminyear, datafilter, "Company", "Company", function(main, min) {
       return {
           Year: main.Year,
           Company: main.Company,
