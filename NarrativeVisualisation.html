@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<script src="https://unpkg.com/d3-simple-slider"></script>
+<style>
+div.annotation {
+position: absolute;	
+test-align: center;
+width: 150px;
+height: 50px;
+padding: 3px;
+font: 12px sans-serif;
+background: #FCFF33;
+border: 0px;
+border-radius: 4px;
+pointer-events: auto;	
+}
+</style>
+<div>The chart below displays the cumulative change in market share for the top 20 auto insurance companies in the United States.</div>
+
+<body onload='init()'>
+
+<svg id="chart" width=500 height=500>
+</svg>
+<svg id="slider" width=500 height=50>
+</svg>
+<svg id="companytype" width=500 height=50>
+</svg>
+<script>
+async function init() {
+
+data = await d3.csv("https://RyanVoge.github.io/auto_insurance_mkt_share/Auto_Ins_Marketshare_Top_20.csv", function(d) { return {
+    Year : +d.Year, Company : d.Company, Mkt_Share_Perc : +d.Mkt_Share_Perc, DWP : +d.DWP, CompanyType : d.CompanyType};
+  });
+//console.log(data[0]);
+
+// initialize variables
+var inityearMax = 2019, inityearMin = 2010
+var initcompanyTypes = ["Captive", "Direct", "Independent"]
+var chartmargin = {top: 50, right: 50, bottom: 50, left: 50},
+    chartwidth = 500 - chartmargin.left - chartmargin.right,
+    chartheight = 500 - chartmargin.top - chartmargin.bottom;
+var tooltipoffset_y = 100, tooltipoffset_x = 10
+
+
+// color circles and lines
+var color = {
+  "Captive" : '#ee5e5e',
+  "Direct" : '#6fafc7',
+  "Independent" : '#bfd46d'}
+  
+// helper function
+function join(lookupTable, mainTable, lookupKey, mainKey, select) {
+    var l = lookupTable.length,
+        m = mainTable.length,
+        lookupIndex = [],
+        output = [];
+    for (var i = 0; i < l; i++) { // loop through l items
+        var row = lookupTable[i];
+        lookupIndex[row[lookupKey]] = row; // create an index for lookup table
+    }
+    for (var j = 0; j < m; j++) { // loop through m items
+        var y = mainTable[j];
+        var x = lookupIndex[y[mainKey]]; // get corresponding row from lookupTable
+        output.push(select(y, x)); // select only the columns you need
+    }
+    return output;
+};
+
+// Function to display chart
+
+function displayChart(yearMin, yearMax, companyTypes) {
+  // Prep data for displaying on chart
+
+  datafilter = data.filter(function(d){ return (d.Year >= yearMin && d.Year <= yearMax && companyTypes.indexOf(d.CompanyType) >= 0) });
+
+  dataminyear = data.filter(function(d){ return d.Year == yearMin});
+
+  var datachart = join(dataminyear, datafilter, "Company", "Company", function(main, min) {
+      return {
+          Year: main.Year,
+          Company: main.Company,
+          Chg_Mkt_Share_Perc: main.Mkt_Share_Perc-min.Mkt_Share_Perc,
+          DWP: main.DWP,
+          CompanyType: main.CompanyType
+      };
+  });
+
+  //console.log(datachart[0].Year)
+
+  //console.log(datachart.filter(function(d){ return d.Company == "State Farm"}));
+
+  var chgMax = d3.max(datachart, function(d) { return d.Chg_Mkt_Share_Perc; }), 
+      chgMin = d3.min(datachart, function(d) { return d.Chg_Mkt_Share_Perc; })
+
+  ScaleX = d3.scaleLinear().domain([yearMin, yearMax]).range([0, chartwidth])
+  ScaleY = d3.scaleLinear().domain([chgMin/100-0.003, chgMax/100]).range([chartheight, 0])
+  ScaleR = d3.scaleLinear().domain([0, 50000000]).range([1.5, 10])
+
+  var plotYears = d3.map(datachart, function(d){return(d.Year)}).keys();
+
+  var datagroup = d3.nest().key(function(d) { return d.Company;}).entries(datachart);
+
+ // clear svg
+ d3.selectAll("#chart > *").remove();
+
+  // add axes
+  d3.select('#chart')
+    .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+    .call(d3.axisLeft(ScaleY).tickFormat(d3.format(".1%")));
+  d3.select('#chart')
+    .append("g").attr("transform", "translate("+chartmargin.left+","+(chartmargin.top+chartheight)+")")
+    .call(d3.axisBottom(ScaleX).tickValues(plotYears).tickFormat(d3.format(".4r")));  
+
+  // y axis label
+    d3.select('#chart')
+      .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+      .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -chartmargin.left-5)
+        .attr("x",-chartheight/2)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Cumulative Market Share Change");   
+  // x axis label
+    d3.select('#chart')
+      .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+      .append("text")
+        .attr("y", chartheight+chartmargin.bottom/4)
+        .attr("x", chartwidth/2)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Year");         
+
+  // plot lines
+  d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+   .selectAll().data(datagroup).enter().append('path')
+   .attr("fill", "none")
+   .attr("stroke", function(d){ return color[d.values[0].CompanyType] })
+   .attr("stroke-width", 2)
+   .style('opacity',0.9)
+   .attr('d',function(d){
+       return d3.line()
+         .x(function(d) {return ScaleX(d.Year);})
+         .y(function(d) {return ScaleY(d.Chg_Mkt_Share_Perc/100);})
+         (d.values)
+         })
+   .attr("stroke-dashoffset", chartwidth*3)
+   .attr("stroke-dasharray", chartwidth*3)
+   .transition().duration(2000).delay(500).ease(d3.easeCubicInOut)
+   //.attr("stroke", function(d){ return color[d.values[0].CompanyType] }) 
+   .attr("stroke-dashoffset", 0)
+  ;  
+    
+  // plot dots
+  d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+   .selectAll().data(datachart).enter().append('circle')
+   .attr('cx',function(d, i) {return ScaleX(d.Year);})
+   .attr('cy', function(d, i) {return ScaleY(d.Chg_Mkt_Share_Perc/100);})
+   .attr('r', 0)
+   .style('opacity',0.9)
+   .attr("fill", function(d, i){ return color[d.CompanyType] })
+  .on("mouseover", function(d, i) {
+   d3.select(this).transition().duration(200)
+     .attr('r',11).style('opacity',1);
+   tooltip_rect.transition().duration(200)
+     .style('opacity',0.4)
+     .attr('x',d3.event.pageX-tooltipoffset_x)
+     .attr('y',d3.event.pageY-tooltipoffset_y);  
+   tooltip_co.transition().duration(200)
+     .style('opacity',0.9)
+     .attr('x',d3.event.pageX-tooltipoffset_x)
+     .attr('y',d3.event.pageY-tooltipoffset_y)
+     .text(d.Company);  
+    tooltip_yr.transition().duration(200)
+     .style('opacity',0.9)
+     .attr('x',d3.event.pageX-tooltipoffset_x)
+     .attr('y',d3.event.pageY-tooltipoffset_y)
+     .text(d.Year);  
+    tooltip_wp.transition().duration(200)
+     .style('opacity',0.9)
+     .attr('x',d3.event.pageX-tooltipoffset_x)
+     .attr('y',d3.event.pageY-tooltipoffset_y)
+     .text("Written Premium: " + d3.format("$.1f")(d.DWP/1000000) + "B");
+     tooltip_chg.transition().duration(200)
+     .style('opacity',0.9)
+     .attr('x',d3.event.pageX-tooltipoffset_x)
+     .attr('y',d3.event.pageY-tooltipoffset_y)
+     .text("Market Share Change: " + d3.format(".1%")(d.Chg_Mkt_Share_Perc/100));   
+
+
+   })
+   .on("mouseout", function(d, i) {
+   d3.select(this).transition().duration(200)
+     .attr('r',ScaleR(d.DWP)).style('opacity',0.9);
+   tooltip_co.transition().duration(200)
+     .style('opacity',0.0)
+     .attr('x', 0)
+     .attr('y', 0);
+   tooltip_yr.transition().duration(200)
+     .style('opacity',0.0)
+     .attr('x', 0)
+     .attr('y', 0);
+   tooltip_wp.transition().duration(200)
+     .style('opacity',0.0)
+     .attr('x', 0)
+     .attr('y', 0);
+   tooltip_chg.transition().duration(200)
+     .style('opacity',0.0)
+     .attr('x', 0)
+     .attr('y', 0);
+   tooltip_rect.transition().duration(200)
+     .style('opacity',0.0)
+     .attr('x', 0)
+     .attr('y', 0);
+
+     })
+.transition().duration(500).delay(1500).ease(d3.easeCubicInOut)
+   .attr('r', function(d, i) {return ScaleR(d.DWP);})
+   
+   ;
+ 
+// tool tip
+  var tooltip_rect =  d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate(0,0)")
+    .append('rect')
+    .attr('x',0)
+    .attr('y',0)
+    .attr('width',160)
+    .attr('height',55)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .style('fill','#636466')
+    //.style("stroke", "#636466")
+    .style("opacity", 0.0)
+;
+    
+  var tooltip_co = d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate(0,0)")
+   .append('text')
+    .attr("font-size", 12)
+    .attr("dy", "1.1em")
+    .attr("dx", "0.2em")
+    .attr("fill", "#f8f8f8")
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 400)
+    .style("opacity", 0.0)
+    .text("Company")
+    ;
+ var tooltip_yr = d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate(0,0)")
+   .append('text')
+    .attr("font-size", 12)
+    .attr("dy", "2.1em")
+    .attr("dx", "0.2em")
+    .attr("fill", "#f8f8f8")
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 400)
+    .style("opacity", 0.0)
+    .text("Year")
+    ;
+ var tooltip_wp = d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate(0,0)")
+   .append('text')
+    .attr("font-size", 12)
+    .attr("dy", "3.1em")
+    .attr("dx", "0.2em")
+    .attr("fill", '#f8f8f8')
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 400)
+    .style("opacity", 0.0)
+    .text("WP")
+    ;
+ var tooltip_chg = d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate(0,0)")
+   .append('text')
+    .attr("font-size", 12)
+    .attr("dy", "4.1em")
+    .attr("dx", "0.2em")
+    .attr("fill", "#f8f8f8")
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 400)
+    .style("opacity", 0.0)
+    .text("MktShareChg")
+    ;  
+
+}
+
+displayChart(inityearMin, inityearMax, initcompanyTypes)
+
+// Year Slider
+var sliderYear = d3
+  .sliderBottom()
+  .min(1999)
+  .max(2019)
+  .width(chartwidth)
+  .tickFormat(d3.format('.4r'))
+  .step(1)
+  .ticks(21)
+  .default([1999, 2019])
+  .fill('#2196f3')
+  .on('onchange', (val) => {
+  	inityearMax = val[1], inityearMin = val[0]
+    displayChart(inityearMin, inityearMax, initcompanyTypes); });
+
+  d3.select('#slider')
+  	.append("g").attr("transform", "translate("+chartmargin.left+",10)")
+    .call(sliderYear);
+
+// Company Type selector
+var CaptiveStatus = ["Display", "Hide"]
+var DirectStatus = ["Display", "Hide"]
+var IndependentStatus = ["Display", "Hide"]
+var CaptiveColor = ['#ee5e5e', 'white']
+var DirectColor = ['#6fafc7', 'white']
+var IndependentColor = ['#bfd46d', 'white']
+
+
+function updateCompanyTypes(){
+ initcompanyTypes = []
+ if (CaptiveStatus[0] == "Display") {initcompanyTypes.push("Captive")}
+ if (DirectStatus[0] == "Display") {initcompanyTypes.push("Direct")}
+ if (IndependentStatus[0] == "Display") {initcompanyTypes.push("Independent")}
+}
+
+var Captive =  d3.select('#companytype')
+  	.append("g").attr("transform", "translate("+chartmargin.left+",0)")
+    .append('rect')
+    .attr('x',0)
+    .attr('y',0)
+    .attr('width',chartwidth/3)
+    .attr('height',50)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .style('fill','#ee5e5e')
+    .style("stroke", '#ee5e5e')
+    .style("stroke-width", 5)
+    .text("test")
+    .on('click', function() {
+      CaptiveStatus = [CaptiveStatus[1], CaptiveStatus[0]]
+      CaptiveColor = [CaptiveColor[1], CaptiveColor[0]]
+      d3.select(this).style("fill",CaptiveColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes)
+    ; });
+
+var CaptiveText = d3.select('#companytype')
+  	.append("g").attr("transform", "translate("+chartmargin.left+",0)")
+    .append('text')
+    .attr('x',chartwidth/6)
+    .attr('y',25)
+    .attr('alignment-baseline',"middle")
+    .attr('text-anchor', "middle")
+    .attr("font-size", 25)
+    .attr("stroke", '#00000')
+    .attr("fill", "#00000")
+    .text("Captive")
+    .on('click', function() {
+      CaptiveStatus = [CaptiveStatus[1], CaptiveStatus[0]]
+      CaptiveColor = [CaptiveColor[1], CaptiveColor[0]]
+      Captive.style("fill",CaptiveColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes)
+    ; });
+    
+var Direct =  d3.select('#companytype')
+  	.append("g").attr("transform", "translate("+(chartmargin.left)+",0)")
+    .append('rect')
+    .attr('x',+chartwidth/3+5)
+    .attr('y',0)
+    .attr('width',chartwidth/3)
+    .attr('height',50)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .style('fill','#6fafc7')
+    .style("stroke", '#6fafc7')
+    .style("stroke-width", 5)
+    .text("test")
+    .on('click', function() {
+      DirectStatus = [DirectStatus[1], DirectStatus[0]]
+      DirectColor = [DirectColor[1], DirectColor[0]]
+      d3.select(this).style("fill",DirectColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes)
+    ; });
+
+var DirectText = d3.select('#companytype')
+  	.append("g").attr("transform", "translate("+chartmargin.left+",0)")
+    .append('text')
+    .attr('x',+chartwidth/3+chartwidth/6+5)
+    .attr('y',25)
+    .attr('alignment-baseline',"middle")
+    .attr('text-anchor', "middle")
+    .attr("font-size", 25)
+    .attr("stroke", '#00000')
+    .attr("fill", "#00000")
+    .text("Direct")
+    .on('click', function() {
+      DirectStatus = [DirectStatus[1], DirectStatus[0]]
+      DirectColor = [DirectColor[1], DirectColor[0]]
+      Direct.style("fill",DirectColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes)
+    ; });
+
+var Independent =  d3.select('#companytype')
+  	.append("g").attr("transform", "translate("+(chartmargin.left)+",0)")
+    .append('rect')
+    .attr('x',(chartwidth/3+5)*2)
+    .attr('y',0)
+    .attr('width',chartwidth/3)
+    .attr('height',50)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .style('fill','#bfd46d')
+    .style("stroke", '#bfd46d')
+    .style("stroke-width", 5)
+    .text("test")
+    .on('click', function() {
+      IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
+      IndependentColor = [IndependentColor[1], IndependentColor[0]]
+      d3.select(this).style("fill",IndependentColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes)
+    ; });
+
+var IndependentText = d3.select('#companytype')
+  	.append("g").attr("transform", "translate("+chartmargin.left+",0)")
+    .append('text')
+    .attr('x',(chartwidth/3+5)*2+chartwidth/6)
+    .attr('y',25)
+    .attr('alignment-baseline',"middle")
+    .attr('text-anchor', "middle")
+    .attr("font-size", 25)
+    .attr("stroke", '#00000')
+    .attr("fill", "#00000")
+    .text("Independent")
+    .on('click', function() {
+      IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
+      IndependentColor = [IndependentColor[1], IndependentColor[0]]
+      Independent.style("fill",IndependentColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes)
+    ; });
+
+// Scenes
+var scene = 0
+var annottext = {
+0: "Welcome! Each line on this chart represents a single auto insurance company.  Each point displays the change in market share from the first year displayed to the year represented by the point."+ "<br/>" + "[CLICK FOR NEXT TIP]",
+1: "Use the sliders below to select the beginning and ending years to measure the change in market share."+ "<br/>" + "[CLICK FOR NEXT TIP]",
+2: "Click the respective boxes above to include/exclude companies by distribution model."+ "<br/>" + "[CLICK FOR NEXT TIP]",
+3: "Hover mouse over points to drill into information."+ "<br/>" + "[CLICK TO EXPLORE ON YOUR OWN]",
+4: "All Done"}
+var annotXpos = {
+0: 100,
+1: 100,
+2: 100,
+3: 100,
+4: 0}
+var annotYpos = {
+0: 100,
+1: 500,
+2: 660,
+3: 100,
+4: 0} 
+var annotwidth = {
+0: 200,
+1: 300,
+2: 300,
+3: 200,
+4: 0}
+var annotheight = {
+0: 100,
+1: 45,
+2: 45,
+3: 60,
+4: 0}
+
+var sceneannotation = d3.select("body").append("div")	
+    .attr("class", "annotation")
+    .style("opacity", 0.8)
+    .style("width", annotwidth[scene] + "px")
+	.style("height", annotheight[scene] + "px")
+    .style("left", annotXpos[scene] + "px")		
+    .style("top", annotYpos[scene] + "px")
+    .html(annottext[scene])
+    .on('click', function(event){
+    nextscene();})
+    ;    
+    
+ // plot sample for tooltip scene
+function tooltipscene(yearMin, yearMax, companyTypes) {
+
+  datafilter = data.filter(function(d){ return (d.Year >= yearMin && d.Year <= yearMax && companyTypes.indexOf(d.CompanyType) >= 0) });
+
+  dataminyear = data.filter(function(d){ return d.Year == yearMin});
+
+  var datachart = join(dataminyear, datafilter, "Company", "Company", function(main, min) {
+      return {
+          Year: main.Year,
+          Company: main.Company,
+          Chg_Mkt_Share_Perc: main.Mkt_Share_Perc-min.Mkt_Share_Perc,
+          DWP: main.DWP,
+          CompanyType: main.CompanyType
+      };
+  });
+
+  //console.log(datachart.filter(function(d){ return d.Company == "State Farm"}));
+
+  var chgMax = d3.max(datachart, function(d) { return d.Chg_Mkt_Share_Perc; }), 
+      chgMin = d3.min(datachart, function(d) { return d.Chg_Mkt_Share_Perc; })
+
+  ScaleX = d3.scaleLinear().domain([yearMin, yearMax]).range([0, chartwidth])
+  ScaleY = d3.scaleLinear().domain([chgMin/100-0.003, chgMax/100]).range([chartheight, 0])
+
+ datatooltip = datachart.filter(function(d){ return (d.Year == 2016 && d.Company == 'Berkshire Hathaway Inc.') });
+ 
+  d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+   .selectAll().data(datatooltip).enter().append('circle')
+   .attr('cx',function(d, i) {return ScaleX(d.Year);})
+   .attr('cy', function(d, i) {return ScaleY(d.Chg_Mkt_Share_Perc/100);})
+   .attr('r', function(d, i) {return ScaleR(d.DWP);})
+   .style('opacity',0.9)
+   .raise()
+   .attr("fill", "#FCFF33")
+  .transition().duration(400)
+   .attr('r', 11).style('opacity',1);
+   
+   console.log(datatooltip[0].Chg_Mkt_Share_Perc)
+   
+   tooltipoffset_adj = 25
+   
+   // tool tip
+  d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+    .append('rect')
+    .attr('x',ScaleX(datatooltip[0].Year))
+    .attr('y',ScaleY(datatooltip[0].Chg_Mkt_Share_Perc/100)-tooltipoffset_y+tooltipoffset_adj)
+    .attr('width',160)
+    .attr('height',55)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .style('fill','#636466')
+    //.style("stroke", "#636466")
+    .style("opacity", 0.4);
+    
+   d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+   .append('text')
+    .attr("font-size", 12)
+    .attr('x',ScaleX(datatooltip[0].Year))
+    .attr('y',ScaleY(datatooltip[0].Chg_Mkt_Share_Perc/100)-tooltipoffset_y+tooltipoffset_adj)
+    .attr("dy", "1.1em")
+    .attr("dx", "0.2em")
+    .attr("fill", "#f8f8f8")
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 400)
+    .style('opacity',0.9)
+    .raise()
+    .text(datatooltip[0].Company)
+    
+ d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+   .append('text')
+    .attr("font-size", 12)
+    .attr('x',ScaleX(datatooltip[0].Year))
+    .attr('y',ScaleY(datatooltip[0].Chg_Mkt_Share_Perc/100)-tooltipoffset_y+tooltipoffset_adj)
+    .attr("dy", "2.1em")
+    .attr("dx", "0.2em")
+    .attr("fill", "#f8f8f8")
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 400)
+    .style("opacity", 0.9)
+    .text(datatooltip[0].Year);
+    
+ d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+   .append('text')
+    .attr("font-size", 12)
+    .attr('x',ScaleX(datatooltip[0].Year))
+    .attr('y',ScaleY(datatooltip[0].Chg_Mkt_Share_Perc/100)-tooltipoffset_y+tooltipoffset_adj)
+    .attr("dy", "3.1em")
+    .attr("dx", "0.2em")
+    .attr("fill", '#f8f8f8')
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 400)
+    .style("opacity", 0.9)
+    .text("Written Premium: " + d3.format("$.1f")(datatooltip[0].DWP/1000000) + "B");
+    
+ d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+   .append('text')
+    .attr("font-size", 12)
+    .attr('x',ScaleX(datatooltip[0].Year))
+    .attr('y',ScaleY(datatooltip[0].Chg_Mkt_Share_Perc/100)-tooltipoffset_y+tooltipoffset_adj)
+    .attr("dy", "4.1em")
+    .attr("dx", "0.2em")
+    .attr("fill", "#f8f8f8")
+    .attr("font-family", "sans-serif")
+    .attr("font-weight", 400)
+    .style("opacity", 0.9)
+    .text("Market Share Change: " + d3.format(".1%")(datatooltip[0].Chg_Mkt_Share_Perc/100));  
+   
+}
+
+
+    
+//sceneannotation.on('click', function(event){
+//    sceneannotation.html("test");});
+
+function nextscene(){
+ scene = scene + 1
+
+ sceneannotation.style("width", annotwidth[scene] + "px")
+    .style("height", annotheight[scene] + "px")
+    .style("left", annotXpos[scene] + "px")		
+    .style("top", annotYpos[scene] + "px")
+    .html(annottext[scene])
+
+ 
+ if (scene == 1){sliderYear.value([2010, 2018]);}
+ if (scene == 2){
+   IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
+   IndependentColor = [IndependentColor[1], IndependentColor[0]]
+   Independent.style("fill",IndependentColor[0])
+   updateCompanyTypes()
+   displayChart(inityearMin, inityearMax, initcompanyTypes);}
+ if (scene == 3){tooltipscene(inityearMin, inityearMax, initcompanyTypes);}
+ if (scene == 4){
+   sceneannotation.style("opacity", 0)
+   sliderYear.value([1999, 2019])
+   IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
+   IndependentColor = [IndependentColor[1], IndependentColor[0]]
+   Independent.style("fill",IndependentColor[0])
+   updateCompanyTypes()
+   displayChart(inityearMin, inityearMax, initcompanyTypes)
+ 
+ ;}
+; }
+
+
+}
+
+
+</script>
+</body>
+</html>
