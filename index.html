@@ -172,52 +172,52 @@ function displayChart(yearMin, yearMax, companyTypes) {
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .transition().duration(tooltipduration)
      .style('opacity',0.4) ;  
-   tooltip_co.transition().duration(tooltipduration)
-     .style('opacity',0.9)
-     .attr('x',d3.event.pageX-tooltipoffset_x)
+   tooltip_co.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
-     .text(d.Company);  
-    tooltip_yr.transition().duration(tooltipduration)
-     .style('opacity',0.9)
-     .attr('x',d3.event.pageX-tooltipoffset_x)
+     .text(d.Company)     
+     .transition().duration(tooltipduration)
+     .style('opacity',0.9);  
+    tooltip_yr.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
-     .text(d.Year);  
-    tooltip_wp.transition().duration(tooltipduration)
-     .style('opacity',0.9)
-     .attr('x',d3.event.pageX-tooltipoffset_x)
+     .text(d.Year)     
+     .transition().duration(tooltipduration)
+     .style('opacity',0.9); 
+    tooltip_wp.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
-     .text("Written Premium: " + d3.format("$.1f")(d.DWP/1000000) + "B");
-     tooltip_chg.transition().duration(tooltipduration)
-     .style('opacity',0.9)
-     .attr('x',d3.event.pageX-tooltipoffset_x)
+     .text("Written Premium: " + d3.format("$.1f")(d.DWP/1000000) + "B")     
+     .transition().duration(tooltipduration)
+     .style('opacity',0.9); 
+     tooltip_chg.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
-     .text("Market Share Change: " + d3.format(".1%")(d.Chg_Mkt_Share_Perc/100));   
+     .text("Market Share Change: " + d3.format(".1%")(d.Chg_Mkt_Share_Perc/100))     
+     .transition().duration(tooltipduration)
+     .style('opacity',0.9); 
 
 
    })
    .on("mouseout", function(d, i) {
    d3.select(this).transition().duration(tooltipduration)
      .attr('r',ScaleR(d.DWP)).style('opacity',0.9);
-   tooltip_co.transition().duration(tooltipduration)
-     .style('opacity',0.0)
-     .attr('x', 0)
-     .attr('y', 0);
-   tooltip_yr.transition().duration(tooltipduration)
-     .style('opacity',0.0)
-     .attr('x', 0)
-     .attr('y', 0);
-   tooltip_wp.transition().duration(tooltipduration)
-     .style('opacity',0.0)
-     .attr('x', 0)
-     .attr('y', 0);
-   tooltip_chg.transition().duration(tooltipduration)
-     .style('opacity',0.0)
-     .attr('x', 0)
-     .attr('y', 0);
-   tooltip_rect.transition().duration(tooltipduration)
-     .style('opacity',0.0)
-     .attr('x', 0)
-     .attr('y', 0);
+   tooltip_rect.attr('x',0)
+     .attr('y',0)
+     .transition().duration(tooltipduration)
+     .style('opacity',0.0) ;  
+   tooltip_co.attr('x',0)
+     .attr('y',0)
+     .transition().duration(tooltipduration)
+     .style('opacity',0.0) ;   
+    tooltip_yr.attr('x',0)
+     .attr('y',0)
+     .transition().duration(tooltipduration)
+     .style('opacity',0.0) ;  
+    tooltip_wp.attr('x',0)
+     .attr('y',0)
+     .transition().duration(tooltipduration)
+     .style('opacity',0.0) ;  
+     tooltip_chg.attr('x',0)
+     .attr('y',0)
+     .transition().duration(tooltipduration)
+     .style('opacity',0.0) ;  
 
      })
 .transition().duration(500).delay(1500).ease(d3.easeCubicInOut)
