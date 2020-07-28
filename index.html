@@ -52,21 +52,21 @@ var color = {
   "Independent" : '#bfd46d'}
   
 // helper function - LEFT JOIN on one field
-function leftjoin(rightTable, leftTable, rightFieldName, leftFieldName, select) {
-    var rightCnt = rightTable.length,
-        leftCnt = leftTable.length,
-        rightIndex = [],
-        result = [];
-    for (var idx = 0; idx < rightCnt; idx++) { 
-        var row = rightTable[idx];
-        rightIndex[row[rightFieldName]] = row; 
+function leftjoin(lookupTable, mainTable, lookupKey, mainKey, select) {
+    var l = lookupTable.length,
+        m = mainTable.length,
+        lookupIndex = [],
+        output = [];
+    for (var i = 0; i < l; i++) { // loop through l items
+        var row = lookupTable[i];
+        lookupIndex[row[lookupKey]] = row; // create an index for lookup table
     }
-    for (var idx = 0; idx < leftCnt; idx++) { 
-        var leftResult = leftTable[idx];
-        var rightResult = lookupIndex[leftResult[leftFieldName]]; 
-        result.push(select(leftResult, rightResult)); 
+    for (var j = 0; j < m; j++) { // loop through m items
+        var y = mainTable[j];
+        var x = lookupIndex[y[mainKey]]; // get corresponding row from lookupTable
+        output.push(select(y, x)); // select only the columns you need
     }
-    return result;
+    return output;
 };
 
 // Function to display chart
