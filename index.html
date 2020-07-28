@@ -150,12 +150,12 @@ function displayChart(yearMin, yearMax, companyTypes) {
          })
    .attr("stroke-dashoffset", chartwidth*3)
    .attr("stroke-dasharray", chartwidth*3)
-   .transition().duration(2000).delay(500).ease(d3.easeCubicInOut)
+   .transition().duration(2000).delay(200).ease(d3.easeCubicInOut)
    //.attr("stroke", function(d){ return color[d.values[0].CompanyType] }) 
    .attr("stroke-dashoffset", 0)
   ;  
     
-  var tooltipduration = 0	
+  var tooltipduration = 50	
   // plot dots
   d3.select('body').select('#chart')
    .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
@@ -220,7 +220,7 @@ function displayChart(yearMin, yearMax, companyTypes) {
      .style('opacity',0.0) ;  
 
      })
-.transition().duration(500).delay(1500).ease(d3.easeCubicInOut)
+.transition().duration(500).delay(1200).ease(d3.easeCubicInOut)
    .attr('r', function(d, i) {return ScaleR(d.DWP);})
    
    ;
