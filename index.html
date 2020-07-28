@@ -119,7 +119,7 @@ function displayChart(yearMin, yearMax, companyTypes) {
       .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
       .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", -55)
+        .attr("y", -chartmargin.left-5)
         .attr("x",-chartheight/2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
