@@ -62,9 +62,9 @@ function leftjoin(rightTable, leftTable, rightFieldName, leftFieldName, select) 
         rightIndex[row[rightFieldName]] = row; 
     }
     for (var idx = 0; idx < leftCnt; idx++) { 
-        var y = leftTable[idx];
-        var x = rightIndex[y[leftFieldName]]; 
-        result.push(select(y, x)); 
+        var leftresult = leftTable[idx];
+        var rightresult = rightIndex[leftresult[leftFieldName]]; 
+        result.push(select(leftresult, rightresult)); 
     }
     return result;
 };
@@ -458,7 +458,7 @@ var annottext = {
 3: "Hover mouse over points to drill into information."+ "<br/>" + "[CLICK TO EXPLORE ON YOUR OWN]",
 4: "All Done"}
 var annotXpos = {
-0: 100,
+0: 300,
 1: 100,
 2: 100,
 3: 100,
@@ -470,7 +470,7 @@ var annotYpos = {
 3: 100,
 4: 0} 
 var annotwidth = {
-0: 200,
+0: 300,
 1: 300,
 2: 300,
 3: 200,
