@@ -199,26 +199,31 @@ function displayChart(yearMin, yearMax, companyTypes) {
    .on("mouseout", function(d, i) {
    d3.select(this).transition().duration(tooltipduration)
      .attr('r',ScaleR(d.DWP)).style('opacity',0.9);
-   tooltip_rect.attr('x',0)
-     .attr('y',0)
-     .transition().duration(tooltipduration)
-     .style('opacity',0.0) ;  
-   tooltip_co.attr('x',0)
-     .attr('y',0)
-     .transition().duration(tooltipduration)
-     .style('opacity',0.0) ;   
-    tooltip_yr.attr('x',0)
-     .attr('y',0)
-     .transition().duration(tooltipduration)
-     .style('opacity',0.0) ;  
-    tooltip_wp.attr('x',0)
-     .attr('y',0)
-     .transition().duration(tooltipduration)
-     .style('opacity',0.0) ;  
-     tooltip_chg.attr('x',0)
-     .attr('y',0)
-     .transition().duration(tooltipduration)
-     .style('opacity',0.0) ;  
+   tooltip_rect.transition().duration(tooltipduration)
+     .style('opacity',0.0)
+     .transition().duration(0)
+     .attr('x',0)
+     .attr('y',0);  
+   tooltip_co.transition().duration(tooltipduration)
+     .style('opacity',0.0)
+     .transition().duration(0)
+     .attr('x',0)
+     .attr('y',0);   
+    tooltip_yr.transition().duration(tooltipduration)
+     .style('opacity',0.0)
+     .transition().duration(0)
+     .attr('x',0)
+     .attr('y',0);  
+    tooltip_wp.transition().duration(tooltipduration)
+     .style('opacity',0.0)
+     .transition().duration(0)
+     .attr('x',0)
+     .attr('y',0); 
+     tooltip_chg.transition().duration(tooltipduration)
+     .style('opacity',0.0)
+     .transition().duration(0)
+     .attr('x',0)
+     .attr('y',0);  
 
      })
 .transition().duration(500).delay(1200).ease(d3.easeCubicInOut)
@@ -465,7 +470,7 @@ var annotXpos = {
 4: 0}
 var annotYpos = {
 0: 100,
-1: 510,
+1: 500,
 2: 640,
 3: 100,
 4: 0} 
@@ -473,7 +478,7 @@ var annotwidth = {
 0: 300,
 1: 600,
 2: 600,
-3: 200,
+3: 300,
 4: 0}
 var annotheight = {
 0: 100,
