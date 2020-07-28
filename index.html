@@ -57,14 +57,14 @@ function leftjoin(rightTable, leftTable, rightFieldName, leftFieldName, select) 
         leftCnt = leftTable.length,
         rightIndex = [],
         result = [];
-    for (var i = 0; i < rightCnt; i++) { // loop through l items
-        var row = rightTable[i];
-        rightIndex[row[rightFieldName]] = row; // create an index for lookup table
+    for (var idx = 0; idx < rightCnt; idx++) { 
+        var row = rightTable[idx];
+        rightIndex[row[rightFieldName]] = row; 
     }
-    for (var j = 0; j < leftCnt; j++) { // loop through m items
-        var y = leftTable[j];
-        var x = rightIndex[y[leftFieldName]]; // get corresponding row from rightTable
-        result.push(select(y, x)); // select only the columns you need
+    for (var idx = 0; idx < leftCnt; idx++) { 
+        var y = leftTable[idx];
+        var x = rightIndex[y[leftFieldName]]; 
+        result.push(select(y, x)); 
     }
     return result;
 };
@@ -120,7 +120,7 @@ function displayChart(yearMin, yearMax, companyTypes) {
       .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
       .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", -chartmargin.left-5)
+        .attr("y", -55)
         .attr("x",-chartheight/2)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
