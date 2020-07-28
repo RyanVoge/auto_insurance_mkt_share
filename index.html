@@ -55,11 +55,11 @@ var color = {
 function leftjoin(rightTable, leftTable, rightFieldName, leftFieldName, select) {
     var rightCnt = rightTable.length,
         leftCnt = leftTable.length,
-        lookupIndex = [],
+        rightIndex = [],
         result = [];
     for (var idx = 0; idx < rightCnt; idx++) { 
         var row = rightTable[idx];
-        lookupIndex[row[rightFieldName]] = row; 
+        rightIndex[row[rightFieldName]] = row; 
     }
     for (var idx = 0; idx < leftCnt; idx++) { 
         var leftResult = leftTable[idx];
@@ -78,7 +78,7 @@ function displayChart(yearMin, yearMax, companyTypes) {
 
   dataminyear = data.filter(function(d){ return d.Year == yearMin});
 
-  var datachart = join(dataminyear, datafilter, "Company", "Company", function(main, min) {
+  var datachart = leftjoin(dataminyear, datafilter, "Company", "Company", function(main, min) {
       return {
           Year: main.Year,
           Company: main.Company,
