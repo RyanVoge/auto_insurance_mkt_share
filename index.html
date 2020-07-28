@@ -39,7 +39,7 @@ var inityearMax = 2019, inityearMin = 2010
 var initcompanyTypes = ["Captive", "Direct", "Independent"]
 var chartmargin = {top: 50, right: 200, bottom: 50, left: 200},
     chartwidth = 1000 - chartmargin.left - chartmargin.right,
-    chartheight = 700 - chartmargin.top - chartmargin.bottom;
+    chartheight = 500 - chartmargin.top - chartmargin.bottom;
 var tooltipoffset_y = 100, tooltipoffset_x = 10
 
 console.log(chartwidth)
@@ -155,6 +155,7 @@ function displayChart(yearMin, yearMax, companyTypes) {
    .attr("stroke-dashoffset", 0)
   ;  
     
+  var tooltipduration = 50	
   // plot dots
   d3.select('body').select('#chart')
    .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
@@ -165,28 +166,28 @@ function displayChart(yearMin, yearMax, companyTypes) {
    .style('opacity',0.9)
    .attr("fill", function(d, i){ return color[d.CompanyType] })
   .on("mouseover", function(d, i) {
-   d3.select(this).transition().duration(200)
+   d3.select(this).transition().duration(tooltipduration)
      .attr('r',11).style('opacity',1);
-   tooltip_rect.transition().duration(200)
+   tooltip_rect.transition().duration(tooltipduration)
      .style('opacity',0.4)
      .attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y);  
-   tooltip_co.transition().duration(200)
+   tooltip_co.transition().duration(tooltipduration)
      .style('opacity',0.9)
      .attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .text(d.Company);  
-    tooltip_yr.transition().duration(200)
+    tooltip_yr.transition().duration(tooltipduration)
      .style('opacity',0.9)
      .attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .text(d.Year);  
-    tooltip_wp.transition().duration(200)
+    tooltip_wp.transition().duration(tooltipduration)
      .style('opacity',0.9)
      .attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .text("Written Premium: " + d3.format("$.1f")(d.DWP/1000000) + "B");
-     tooltip_chg.transition().duration(200)
+     tooltip_chg.transition().duration(tooltipduration)
      .style('opacity',0.9)
      .attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
@@ -195,25 +196,25 @@ function displayChart(yearMin, yearMax, companyTypes) {
 
    })
    .on("mouseout", function(d, i) {
-   d3.select(this).transition().duration(200)
+   d3.select(this).transition().duration(tooltipduration)
      .attr('r',ScaleR(d.DWP)).style('opacity',0.9);
-   tooltip_co.transition().duration(200)
+   tooltip_co.transition().duration(tooltipduration)
      .style('opacity',0.0)
      .attr('x', 0)
      .attr('y', 0);
-   tooltip_yr.transition().duration(200)
+   tooltip_yr.transition().duration(tooltipduration)
      .style('opacity',0.0)
      .attr('x', 0)
      .attr('y', 0);
-   tooltip_wp.transition().duration(200)
+   tooltip_wp.transition().duration(tooltipduration)
      .style('opacity',0.0)
      .attr('x', 0)
      .attr('y', 0);
-   tooltip_chg.transition().duration(200)
+   tooltip_chg.transition().duration(tooltipduration)
      .style('opacity',0.0)
      .attr('x', 0)
      .attr('y', 0);
-   tooltip_rect.transition().duration(200)
+   tooltip_rect.transition().duration(tooltipduration)
      .style('opacity',0.0)
      .attr('x', 0)
      .attr('y', 0);
