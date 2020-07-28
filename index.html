@@ -20,11 +20,11 @@ pointer-events: auto;
 
 <body onload='init()'>
 
-<svg id="chart" width=1000 height=500>
+<svg id="chart" width=1200 height=500>
 </svg>
-<svg id="slider" width=1000 height=50>
+<svg id="slider" width=1200 height=50>
 </svg>
-<svg id="companytype" width=1000 height=50>
+<svg id="companytype" width=1200 height=50>
 </svg>
 <script>
 async function init() {
@@ -37,8 +37,8 @@ data = await d3.csv("https://RyanVoge.github.io/auto_insurance_mkt_share/Auto_In
 // initialize variables
 var inityearMax = 2019, inityearMin = 2010
 var initcompanyTypes = ["Captive", "Direct", "Independent"]
-var chartmargin = {top: 50, right: 200, bottom: 50, left: 200},
-    chartwidth = 1000 - chartmargin.left - chartmargin.right,
+var chartmargin = {top: 50, right: 250, bottom: 50, left: 250},
+    chartwidth = 1200 - chartmargin.left - chartmargin.right,
     chartheight = 500 - chartmargin.top - chartmargin.bottom;
 var tooltipoffset_y = 100, tooltipoffset_x = 10
 
