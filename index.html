@@ -72,7 +72,7 @@ function leftjoin(rightTable, leftTable, rightFieldName, leftFieldName, select) 
 
 // Function to display chart
 
-function displayChart(yearMin, yearMax, companyTypes, tooltipOpacity) {
+function displayChart(yearMin, yearMax, companyTypes, enableTooltip) {
   // Prep data for displaying on chart
 
   datafilter = data.filter(function(d){ return (d.Year >= yearMin && d.Year <= yearMax && companyTypes.indexOf(d.CompanyType) >= 0) });
@@ -168,11 +168,11 @@ function displayChart(yearMin, yearMax, companyTypes, tooltipOpacity) {
    .attr("fill", function(d, i){ return color[d.CompanyType] })
   .on("mouseover", function(d, i) {
    d3.select(this).transition().duration(tooltipduration)
-     .attr('r',if(tooltipOpacity == 0.0) {return ScaleR(d.DWP);} else {return 11;} ).style('opacity',if(tooltipOpacity == 0.0) {return 0.9;} else {return 1;});
+     .attr('r',if(enableTooltip == "off") {return ScaleR(d.DWP);} else {return 11;} ).style('opacity',if(tooltipOpacity == "off") {return 0.9;} else {return 1;});
    tooltip_rect.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .transition().duration(tooltipduration)
-     .style('opacity',if(tooltipOpacity == 0.0) {return 0.0;} else {return 0.4;}) ;  
+     .style('opacity',if(tooltipOpacity == "off") {return 0.0;} else {return 0.4;}) ;  
    tooltip_co.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .text(d.Company)     
@@ -297,7 +297,7 @@ function displayChart(yearMin, yearMax, companyTypes, tooltipOpacity) {
 
 }
 
-displayChart(inityearMin, inityearMax, initcompanyTypes, 0.0)
+displayChart(inityearMin, inityearMax, initcompanyTypes, "off")
 
 // Year Slider
 var sliderYear = d3
