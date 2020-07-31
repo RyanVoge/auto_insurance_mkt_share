@@ -168,7 +168,7 @@ function displayChart(yearMin, yearMax, companyTypes, enableTooltip) {
    .attr("fill", function(d, i){ return color[d.CompanyType] })
   .on("mouseover", function(d, i) {
    d3.select(this).transition().duration(tooltipduration)
-     .attr('r',11).style('opacity',1);
+     .attr('r',if (enableTooltip == "on"){11;} else {7;}).style('opacity',1);
    tooltip_rect.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .transition().duration(tooltipduration)
@@ -466,7 +466,7 @@ var annotXpos = {
 0: 275,
 1: 250,
 2: 300,
-3: 400,
+3: 350,
 4: 0}
 var annotYpos = {
 0: 100,
@@ -478,11 +478,11 @@ var annotwidth = {
 0: 350,
 1: 700,
 2: 600,
-3: 300,
+3: 350,
 4: 0}
 var annotheight = {
 0: 140,
-1: 50,
+1: 40,
 2: 70,
 3: 80,
 4: 0}
