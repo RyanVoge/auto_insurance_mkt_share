@@ -168,11 +168,11 @@ function displayChart(yearMin, yearMax, companyTypes, enableTooltip) {
    .attr("fill", function(d, i){ return color[d.CompanyType] })
   .on("mouseover", function(d, i) {
    d3.select(this).transition().duration(tooltipduration)
-     .attr('r',if(enableTooltip == "off") {return ScaleR(d.DWP);} else {return 11;} ).style('opacity',if(tooltipOpacity == "off") {return 0.9;} else {return 1;});
+     .attr('r',if (enableTooltip == "off") {return ScaleR(d.DWP);} else {return 11;} ).style('opacity',if (enableTooltip == "off") {return 0.9;} else {return 1;});
    tooltip_rect.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .transition().duration(tooltipduration)
-     .style('opacity',if(tooltipOpacity == "off") {return 0.0;} else {return 0.4;}) ;  
+     .style('opacity',if (enableTooltip == "off") {return 0.0;} else {return 0.4;}) ;  
    tooltip_co.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .text(d.Company)     
