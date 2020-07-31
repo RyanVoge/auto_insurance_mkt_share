@@ -355,13 +355,7 @@ var Captive =  d3.select('#companytype')
     .style("stroke", '#ee5e5e')
     .style("stroke-width", 5)
     .text("test")
-    .on('click', function() {
-      CaptiveStatus = [CaptiveStatus[1], CaptiveStatus[0]]
-      CaptiveColor = [CaptiveColor[1], CaptiveColor[0]]
-      d3.select(this).style("fill",CaptiveColor[0])
-      updateCompanyTypes()
-      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
-    ; });
+    ;
 
 var CaptiveText = d3.select('#companytype')
   	.append("g").attr("transform", "translate("+chartmargin.left+",0)")
@@ -374,13 +368,7 @@ var CaptiveText = d3.select('#companytype')
     .attr("stroke", '#00000')
     .attr("fill", "#00000")
     .text("Captive")
-    .on('click', function() {
-      CaptiveStatus = [CaptiveStatus[1], CaptiveStatus[0]]
-      CaptiveColor = [CaptiveColor[1], CaptiveColor[0]]
-      Captive.style("fill",CaptiveColor[0])
-      updateCompanyTypes()
-      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
-    ; });
+    ;
     
 var Direct =  d3.select('#companytype')
   	.append("g").attr("transform", "translate("+(chartmargin.left)+",0)")
@@ -546,7 +534,7 @@ function tooltipscene(yearMin, yearMax, companyTypes) {
   .transition().duration(400)
    .attr('r', 11).style('opacity',1);
    
-   console.log(datatooltip[0].Chg_Mkt_Share_Perc)
+   //console.log(datatooltip[0].Chg_Mkt_Share_Perc)
    
    tooltipoffset_adj = 25
    
@@ -658,6 +646,20 @@ function nextscene(){
    sliderYear.on('onchange', (val) => {
   	inityearMax = val[1], inityearMin = val[0]
     displayChart(inityearMin, inityearMax, initcompanyTypes, "on"); })
+   Captive.on('click', function() {
+      CaptiveStatus = [CaptiveStatus[1], CaptiveStatus[0]]
+      CaptiveColor = [CaptiveColor[1], CaptiveColor[0]]
+      d3.select(this).style("fill",CaptiveColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
+    ; })
+   CaptiveText.on('click', function() {
+      CaptiveStatus = [CaptiveStatus[1], CaptiveStatus[0]]
+      CaptiveColor = [CaptiveColor[1], CaptiveColor[0]]
+      Captive.style("fill",CaptiveColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
+    ; })
    displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
  
  ;}
