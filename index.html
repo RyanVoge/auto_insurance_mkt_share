@@ -320,10 +320,7 @@ var sliderYear = d3
   .step(1)
   .ticks(21)
   .default([1999, 2019])
-  .fill('#09349e')
-  .on('onchange', (val) => {
-  	inityearMax = val[1], inityearMin = val[0]
-    displayChart(inityearMin, inityearMax, initcompanyTypes, "on"); });
+  .fill('#09349e');
 
   d3.select('#slider')
   	.append("g").attr("transform", "translate("+chartmargin.left+",10)")
@@ -641,7 +638,9 @@ function nextscene(){
     .html(annottext[scene])
 
  
- if (scene == 1){sliderYear.value([2010, 2018]);}
+ if (scene == 1){sliderYear.value([2010, 2018])
+	displayChart(2010, 2018, initcompanyTypes, "off")
+		 ;}
  if (scene == 2){
    IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
    IndependentColor = [IndependentColor[1], IndependentColor[0]]
@@ -656,6 +655,9 @@ function nextscene(){
    IndependentColor = [IndependentColor[1], IndependentColor[0]]
    Independent.style("fill",IndependentColor[0])
    updateCompanyTypes()
+   sliderYear.on('onchange', (val) => {
+  	inityearMax = val[1], inityearMin = val[0]
+    displayChart(inityearMin, inityearMax, initcompanyTypes, "on"); })
    displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
  
  ;}
