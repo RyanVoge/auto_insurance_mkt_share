@@ -457,10 +457,10 @@ var IndependentText = d3.select('#companytype')
 // Scenes
 var scene = 0
 var annottext = {
-0: "Welcome! Each line on this chart represents a single auto insurance company.  Each point marks the change in market share from the first year displayed to the year represented by the point."+ "<br/>" + "<br/>" + "[CLICK FOR NEXT TIP!]",
-1: "Use the sliders below to select the beginning and ending years to measure the change in market share."+ "<br/>" + "[CLICK FOR NEXT TIP]",
-2: "Click the respective boxes above to include/exclude companies by distribution model."+ "<br/>" + "[CLICK FOR NEXT TIP]",
-3: "Hover mouse over points to drill into the details!"+ "<br/>" + "<br/>" + "[CLICK TO EXPLORE ON YOUR OWN!]",
+0: "Welcome! Click through this handy guide to help you navigate this chart. + "<br/>" + Each line on this chart represents a single auto insurance company.  Each point marks the change in market share from the first year displayed to the year represented by the point."+ "<br/>" + "Lets find out which company grew the fastest since 2010. " + "<br/>" + "[CLICK FOR NEXT TIP!]",
+1: "Use the sliders below to select the beginning year as 2010 and, if you choose, select an ending year to measure the change in market share."+ "<br/>" + "[CLICK FOR NEXT TIP]",
+2: "Click the respective boxes above to include or exclude companies by distribution model.  A color-filled box means companies with that distribution model are displayed.  In this example, we chose to remove Independent companies."+ "<br/>" + "[CLICK FOR NEXT TIP]",
+3: "Hover mouse over points to drill into the details!"+ "<br/>" + "Here we learn that Berkshire Hathaway (aka GEICO) has grown market share the most since 2010." +  "<br/>" + "[CLICK TO EXPLORE ON YOUR OWN!]",
 4: "All Done"}
 var annotXpos = {
 0: 300,
@@ -481,10 +481,10 @@ var annotwidth = {
 3: 300,
 4: 0}
 var annotheight = {
-0: 100,
+0: 130,
 1: 30,
 2: 30,
-3: 60,
+3: 80,
 4: 0}
 
 var sceneannotation = d3.select("body").append("div")	
