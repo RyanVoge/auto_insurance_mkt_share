@@ -158,7 +158,7 @@ function displayChart(yearMin, yearMax, companyTypes, enableTooltip) {
     
   var tooltipduration = 50	
   // plot dots
-  d3.select('body').select('#chart')
+  var points = d3.select('body').select('#chart')
    .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
    .selectAll().data(datachart).enter().append('circle')
    .attr('cx',function(d, i) {return ScaleX(d.Year);})
@@ -166,9 +166,13 @@ function displayChart(yearMin, yearMax, companyTypes, enableTooltip) {
    .attr('r', 0)
    .style('opacity',0.9)
    .attr("fill", function(d, i){ return color[d.CompanyType] })
-  .on("mouseover", function(d, i) {
+  .transition().duration(500).delay(1200).ease(d3.easeCubicInOut)
+   .attr('r', function(d, i) {return ScaleR(d.DWP);});
+	
+  if (enableTooltip == "on"){
+	  points.on("mouseover", function(d, i) {
    d3.select(this).transition().duration(tooltipduration)
-     .attr('r',if (enableTooltip == "on"){11;} else {7;}).style('opacity',1);
+     .attr('r',11).style('opacity',1);
    tooltip_rect.attr('x',d3.event.pageX-tooltipoffset_x)
      .attr('y',d3.event.pageY-tooltipoffset_y)
      .transition().duration(tooltipduration)
@@ -223,13 +227,8 @@ function displayChart(yearMin, yearMax, companyTypes, enableTooltip) {
      .transition().duration(0)
      .attr('x',0)
      .attr('y',0);  
-
-     })
-
-.transition().duration(500).delay(1200).ease(d3.easeCubicInOut)
-   .attr('r', function(d, i) {return ScaleR(d.DWP);})
-   
-   ;
+     }) // end mouseout
+;} // end if
  
 // tool tip
   var tooltip_rect =  d3.select('body').select('#chart')
