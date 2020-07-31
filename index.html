@@ -383,13 +383,7 @@ var Direct =  d3.select('#companytype')
     .style("stroke", '#6fafc7')
     .style("stroke-width", 5)
     .text("test")
-    .on('click', function() {
-      DirectStatus = [DirectStatus[1], DirectStatus[0]]
-      DirectColor = [DirectColor[1], DirectColor[0]]
-      d3.select(this).style("fill",DirectColor[0])
-      updateCompanyTypes()
-      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
-    ; });
+;
 
 var DirectText = d3.select('#companytype')
   	.append("g").attr("transform", "translate("+chartmargin.left+",0)")
@@ -402,13 +396,7 @@ var DirectText = d3.select('#companytype')
     .attr("stroke", '#00000')
     .attr("fill", "#00000")
     .text("Direct")
-    .on('click', function() {
-      DirectStatus = [DirectStatus[1], DirectStatus[0]]
-      DirectColor = [DirectColor[1], DirectColor[0]]
-      Direct.style("fill",DirectColor[0])
-      updateCompanyTypes()
-      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
-    ; });
+    ;
 
 var Independent =  d3.select('#companytype')
   	.append("g").attr("transform", "translate("+(chartmargin.left)+",0)")
@@ -423,13 +411,7 @@ var Independent =  d3.select('#companytype')
     .style("stroke", '#bfd46d')
     .style("stroke-width", 5)
     .text("test")
-    .on('click', function() {
-      IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
-      IndependentColor = [IndependentColor[1], IndependentColor[0]]
-      d3.select(this).style("fill",IndependentColor[0])
-      updateCompanyTypes()
-      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
-    ; });
+    ;
 
 var IndependentText = d3.select('#companytype')
   	.append("g").attr("transform", "translate("+chartmargin.left+",0)")
@@ -442,13 +424,7 @@ var IndependentText = d3.select('#companytype')
     .attr("stroke", '#00000')
     .attr("fill", "#00000")
     .text("Independent")
-    .on('click', function() {
-      IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
-      IndependentColor = [IndependentColor[1], IndependentColor[0]]
-      Independent.style("fill",IndependentColor[0])
-      updateCompanyTypes()
-      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
-    ; });
+    ;
 
 // Scenes
 var scene = 0
@@ -657,6 +633,34 @@ function nextscene(){
       CaptiveStatus = [CaptiveStatus[1], CaptiveStatus[0]]
       CaptiveColor = [CaptiveColor[1], CaptiveColor[0]]
       Captive.style("fill",CaptiveColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
+    ; })
+   Direct.on('click', function() {
+      DirectStatus = [DirectStatus[1], DirectStatus[0]]
+      DirectColor = [DirectColor[1], DirectColor[0]]
+      d3.select(this).style("fill",DirectColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
+    ; })
+   DirectText.on('click', function() {
+      DirectStatus = [DirectStatus[1], DirectStatus[0]]
+      DirectColor = [DirectColor[1], DirectColor[0]]
+      Direct.style("fill",DirectColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
+    ; })
+   Independent.on('click', function() {
+      IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
+      IndependentColor = [IndependentColor[1], IndependentColor[0]]
+      d3.select(this).style("fill",IndependentColor[0])
+      updateCompanyTypes()
+      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
+    ; })
+   IndependentText.on('click', function() {
+      IndependentStatus = [IndependentStatus[1], IndependentStatus[0]]
+      IndependentColor = [IndependentColor[1], IndependentColor[0]]
+      Independent.style("fill",IndependentColor[0])
       updateCompanyTypes()
       displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
     ; })
