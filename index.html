@@ -603,8 +603,7 @@ function nextscene(){
 
  
  if (scene == 1){sliderYear.value([2010, 2018])
-        .on('onchange', (val) => {
-  	d3.select(this).value([2010, 2018]);
+        .on('onchange', (val) => {d3.select(this).value([2010, 2018]);});
 	displayChart(2010, 2018, initcompanyTypes, "off")
 		 ;}
  if (scene == 2){
