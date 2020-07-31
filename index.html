@@ -228,7 +228,20 @@ function displayChart(yearMin, yearMax, companyTypes, enableTooltip) {
   .transition().duration(500).delay(1200).ease(d3.easeCubicInOut)
    .attr('r', function(d, i) {return ScaleR(d.DWP);});
 ;} // end if
- 
+ else {
+  var points = d3.select('body').select('#chart')
+   .append("g").attr("transform", "translate("+chartmargin.left+","+chartmargin.top+")")
+   .selectAll().data(datachart).enter().append('circle')
+   .attr('cx',function(d, i) {return ScaleX(d.Year);})
+   .attr('cy', function(d, i) {return ScaleY(d.Chg_Mkt_Share_Perc/100);})
+   .attr('r', 0)
+   .style('opacity',0.9)
+   .attr("fill", function(d, i){ return color[d.CompanyType] })
+  
+  .transition().duration(500).delay(1200).ease(d3.easeCubicInOut)
+   .attr('r', function(d, i) {return ScaleR(d.DWP);});
+;} // end else
+	
 // tool tip
   var tooltip_rect =  d3.select('body').select('#chart')
    .append("g").attr("transform", "translate(0,0)")
@@ -295,7 +308,7 @@ function displayChart(yearMin, yearMax, companyTypes, enableTooltip) {
 
 }
 
-displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
+displayChart(inityearMin, inityearMax, initcompanyTypes, "off")
 
 // Year Slider
 var sliderYear = d3
@@ -449,7 +462,7 @@ var IndependentText = d3.select('#companytype')
       IndependentColor = [IndependentColor[1], IndependentColor[0]]
       Independent.style("fill",IndependentColor[0])
       updateCompanyTypes()
-      displayChart(inityearMin, inityearMax, initcompanyTypes)
+      displayChart(inityearMin, inityearMax, initcompanyTypes, "on")
     ; });
 
 // Scenes
